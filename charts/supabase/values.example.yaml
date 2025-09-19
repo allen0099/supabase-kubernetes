@@ -40,7 +40,7 @@ studio:
     NEXT_PUBLIC_ENABLE_LOGS: "true"
   livenessProbe:
     httpGet:
-      path: /api/profile
+      path: /api/platform/profile
       port: 3000
     initialDelaySeconds: 3
 
@@ -69,6 +69,8 @@ realtime:
       path: /
       port: 4000
     initialDelaySeconds: 3
+  environment:
+    APP_NAME: realtime
 
 meta:
   image:
@@ -129,6 +131,8 @@ analytics:
       path: /health
       port: 4000
     initialDelaySeconds: 3
+  environment:
+    DB_SCHEMA: _analytics
 
 vector:
   image:
