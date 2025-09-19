@@ -49,7 +49,7 @@ spec:
           {{- end }}
           ports:
             - name: http
-              containerPort: 8080
+              containerPort: 5001
               protocol: TCP
           {{- if or (.Values.imgproxy.persistence.enabled) (.Values.imgproxy.volumes) }}
           volumeMounts:
@@ -73,7 +73,7 @@ spec:
         {{- if .Values.imgproxy.persistence.enabled }}
         - name: imgproxy-volume
           persistentVolumeClaim:
-            claimName: {{ include "supabase.imgproxy.fullname" . }}-pvc
+            claimName: {{ include "supabase.storage.fullname" . }}-pvc
         {{- end }}
       {{- end }}
       {{- with .Values.imgproxy.nodeSelector }}

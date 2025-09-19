@@ -15,6 +15,9 @@ secret:
     database: postgres
   analytics:
     apiKey: your-super-secret-and-long-logflare-key
+  supavisor:
+    secretKeyBase: UpNVntn3cDxHJpq99YMc1T1AQgQpc8kfYTuRgBiYa15BLrx8etQoXz3gZv1/u2oq
+    vaultEncKey: your-encryption-key-32-chars-min
 
 db:
   enabled: true
@@ -50,7 +53,20 @@ auth:
   environment:
     API_EXTERNAL_URL: http://example.com
     GOTRUE_SITE_URL: http://example.com
-    GOTRUE_EXTERNAL_EMAIL_ENABLED: "true"
+    GOTRUE_URI_ALLOW_LIST: ""
+    GOTRUE_DISABLE_SIGNUP: false
+    GOTRUE_JWT_ADMIN_ROLES: service_role
+    GOTRUE_JWT_AUD: authenticated
+    GOTRUE_JWT_DEFAULT_GROUP_NAME: authenticated
+    GOTRUE_JWT_EXP: 3600
+    GOTRUE_EXTERNAL_EMAIL_ENABLED: true
+    GOTRUE_EXTERNAL_ANONYMOUS_USERS_ENABLED: false
+    GOTRUE_EXTERNAL_PHONE_ENABLED: true
+    GOTRUE_SMS_AUTOCONFIRM: true
+    GOTRUE_MAILER_URLPATHS_CONFIRMATION: /auth/v1/verify
+    GOTRUE_MAILER_URLPATHS_INVITE: /auth/v1/verify
+    GOTRUE_MAILER_URLPATHS_RECOVERY: /auth/v1/verify
+    GOTRUE_MAILER_URLPATHS_EMAIL_CHANGE: /auth/v1/verify
     GOTRUE_MAILER_AUTOCONFIRM: "true"
     GOTRUE_SMTP_ADMIN_EMAIL: "your-mail@example.com"
     GOTRUE_SMTP_HOST: "smtp.example.com"
@@ -60,6 +76,11 @@ auth:
 rest:
   image:
     tag: v12.2.12
+  environment:
+    PGRST_DB_SCHEMAS: public,storage,graphql_public
+    PGRST_DB_ANON_ROLE: anon
+    PGRST_DB_USE_LEGACY_GUCS: "false"
+    PGRST_APP_SETTINGS_JWT_EXP: "3600"
 
 realtime:
   image:
@@ -79,6 +100,14 @@ meta:
 storage:
   image:
     tag: v1.25.7
+  environment:
+    FILE_SIZE_LIMIT: 52428800
+    STORAGE_BACKEND: file
+    FILE_STORAGE_BACKEND_PATH: /var/lib/storage
+    TENANT_ID: stub
+    REGION: stub
+    GLOBAL_S3_BUCKET: stub
+    ENABLE_IMAGE_TRANSFORMATION: "true"
   livenessProbe:
     httpGet:
       path: /status
@@ -91,6 +120,9 @@ imgproxy:
   image:
     tag: v3.8.0
   environment:
+    IMGPROXY_BIND: :5001
+    IMGPROXY_LOCAL_FILESYSTEM_ROOT: /
+    IMGPROXY_USE_ETAG: "true"
     IMGPROXY_ENABLE_WEBP_DETECTION: "true"
   livenessProbe:
     exec:
@@ -106,6 +138,11 @@ kong:
     repository: kong
     tag: 2.8.1
   environment:
+    KONG_DATABASE: "off"
+    KONG_DNS_ORDER: LAST,A,CNAME
+    KONG_PLUGINS: request-transformer,cors,key-auth,acl,basic-auth
+    KONG_NGINX_PROXY_PROXY_BUFFER_SIZE: 160k
+    KONG_NGINX_PROXY_PROXY_BUFFERS: "64 160k"
     KONG_DECLARATIVE_CONFIG: /usr/local/kong/kong.yml
     KONG_LOG_LEVEL: info
   ingress:
@@ -156,3 +193,45 @@ vector:
 functions:
   image:
     tag: v1.69.6
+
+
+supavisor:
+  enabled: true
+  serviceAccount:
+    create: true
+    name: ""
+  image:
+    repository: supabase/supavisor
+    tag: 2.5.7
+  replicaCount: 1
+  autoscaling:
+    enabled: false
+  environment:
+    API_JWT_SECRET: ""
+    METRICS_JWT_SECRET: ""
+    VAULT_ENC_KEY: ""
+    SECRET_KEY_BASE: ""
+    REGION: local
+    ERL_AFLAGS: -proto_dist inet_tcp
+    POOLER_TENANT_ID: your-tenant-id
+    POOLER_DEFAULT_POOL_SIZE: 20
+    POOLER_MAX_CLIENT_CONN: 100
+    POOLER_POOL_MODE: transaction
+    DB_POOL_SIZE: 5
+    CLUSTER_POSTGRES: true
+  service:
+    type: ClusterIP
+    db:
+      port: 5432
+    pooler:
+      port: 6543
+    api:
+      port: 4000
+  livenessProbe:
+    httpGet:
+      path: /api/health
+      port: 4000
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 5
+    failureThreshold: 5

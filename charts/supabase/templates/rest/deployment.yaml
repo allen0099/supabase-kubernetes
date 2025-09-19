@@ -73,8 +73,32 @@ spec:
                   name: {{ include "supabase.secret.db" . }}
                   key: database
                   {{- end }}
-            - name: PGRST_DB_URI
-              value: $(DB_DRIVER)://$(DB_USER):$(DB_PASSWORD_ENC)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?sslmode=$(DB_SSL)
+            - name: PGRST_DB_USER
+              value: authenticator
+            - name: PGRST_DB_PASS
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.secret.db.secretRef }}
+                  name: {{ .Values.secret.db.secretRef }}
+                  key: {{ .Values.secret.db.secretRefKey.password | default "password" }}
+                  {{- else }}
+                  name: {{ include "supabase.secret.db" . }}
+                  key: password
+                  {{- end }}
+            - name: PGRST_DB_HOST
+              value: {{ include "supabase.db.fullname" . }}
+            - name: PGRST_DB_PORT
+              value: "5432"
+            - name: PGRST_DB_NAME
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.secret.db.secretRef }}
+                  name: {{ .Values.secret.db.secretRef }}
+                  key: {{ .Values.secret.db.secretRefKey.database | default "database" }}
+                  {{- else }}
+                  name: {{ include "supabase.secret.db" . }}
+                  key: database
+                  {{- end }}
             - name: PGRST_JWT_SECRET
               valueFrom:
                 secretKeyRef:

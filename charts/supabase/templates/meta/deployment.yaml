@@ -63,18 +63,34 @@ spec:
                   name: {{ include "supabase.secret.db" . }}
                   key: database
                   {{- end }}
+            - name: PG_META_PORT
+              value: "8080"
             - name: PG_META_DB_HOST
-              value: $(DB_HOST)
+              value: {{ include "supabase.db.fullname" . }}
             - name: PG_META_DB_PORT
-              value: $(DB_PORT)
+              value: "5432"
             - name: PG_META_DB_NAME
-              value: $(DB_NAME)
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.secret.db.secretRef }}
+                  name: {{ .Values.secret.db.secretRef }}
+                  key: {{ .Values.secret.db.secretRefKey.database | default "database" }}
+                  {{- else }}
+                  name: {{ include "supabase.secret.db" . }}
+                  key: database
+                  {{- end }}
             - name: PG_META_DB_USER
-              value: $(DB_USER)
+              value: supabase_admin
             - name: PG_META_DB_PASSWORD
-              value: $(DB_PASSWORD)
-            - name: PG_META_DB_SSL_MODE
-              value: $(DB_SSL)
+              valueFrom:
+                secretKeyRef:
+                  {{- if .Values.secret.db.secretRef }}
+                  name: {{ .Values.secret.db.secretRef }}
+                  key: {{ .Values.secret.db.secretRefKey.password | default "password" }}
+                  {{- else }}
+                  name: {{ include "supabase.secret.db" . }}
+                  key: password
+                  {{- end }}
           {{- with .Values.meta.livenessProbe }}
           livenessProbe:
             {{- toYaml . | nindent 12 }}

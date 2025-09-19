@@ -55,3 +55,10 @@ Check if both s3 keys are valid
 {{- printf "false" -}}
 {{- end -}}
 {{- end -}}
+
+{{/*
+Expand the name of the supavisor secret.
+*/}}
+{{- define "supabase.secret.supavisor" -}}
+{{- printf "%s-supavisor" (include "supabase.fullname" .) }}
+{{- end -}}

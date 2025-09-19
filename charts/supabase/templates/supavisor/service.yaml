@@ -1,0 +1,25 @@
+{{- if .Values.supavisor.enabled -}}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "supabase.supavisor.fullname" . }}
+  labels:
+    {{- include "supabase.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.supavisor.service.type }}
+  ports:
+    - port: {{ .Values.supavisor.service.db.port }}
+      targetPort: db
+      protocol: TCP
+      name: db
+    - port: {{ .Values.supavisor.service.pooler.port }}
+      targetPort: pooler
+      protocol: TCP
+      name: pooler
+    - port: {{ .Values.supavisor.service.api.port }}
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "supabase.supavisor.selectorLabels" . | nindent 4 }}
+{{- end }}

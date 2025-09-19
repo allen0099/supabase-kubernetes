@@ -91,6 +91,11 @@ spec:
             {{- toYaml .Values.storage.securityContext | nindent 12 }}
           image: "{{ .Values.storage.image.repository }}:{{ .Values.storage.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.storage.image.pullPolicy }}
+          command: ["/bin/sh", "-c"]
+          args:
+            - |
+              export DATABASE_URL="$(echo "$DATABASE_URL_TEMPLATE" | sed "s|\$DB_PASSWORD|$DB_PASSWORD|")"
+              exec node dist/index.js
           env:
             {{- range $key, $value := .Values.storage.environment }}
             - name: {{ $key }}
@@ -114,28 +119,8 @@ spec:
                   name: {{ include "supabase.secret.db" . }}
                   key: password
                   {{- end }}
-            - name: DB_PASSWORD_ENC
-              valueFrom:
-                secretKeyRef:
-                  {{- if .Values.secret.db.secretRef }}
-                  name: {{ .Values.secret.db.secretRef }}
-                  key: {{ .Values.secret.db.secretRefKey.password | default "password" }}
-                  {{- else }}
-                  name: {{ include "supabase.secret.db" . }}
-                  key: password_encoded
-                  {{- end }}
-            - name: DB_NAME
-              valueFrom:
-                secretKeyRef:
-                  {{- if .Values.secret.db.secretRef }}
-                  name: {{ .Values.secret.db.secretRef }}
-                  key: {{ .Values.secret.db.secretRefKey.database | default "database" }}
-                  {{- else }}
-                  name: {{ include "supabase.secret.db" . }}
-                  key: database
-                  {{- end }}
-            - name: DATABASE_URL
-              value: $(DB_DRIVER)://$(DB_USER):$(DB_PASSWORD_ENC)@$(DB_HOST):$(DB_PORT)/$(DB_NAME)?search_path=auth&sslmode=$(DB_SSL)
+            - name: DATABASE_URL_TEMPLATE
+              value: "postgres://supabase_storage_admin:$DB_PASSWORD@{{ include "supabase.db.fullname" . }}:5432/{{ .Values.secret.db.database }}"
             - name: PGRST_JWT_SECRET
               valueFrom:
                 secretKeyRef:

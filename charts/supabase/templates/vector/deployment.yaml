@@ -49,7 +49,7 @@ spec:
                 fieldRef:
                   fieldPath: spec.nodeName
           {{- if .Values.analytics.enabled }}
-            - name: LOGFLARE_API_KEY
+            - name: LOGFLARE_PUBLIC_ACCESS_TOKEN
               valueFrom:
                 secretKeyRef:
                   {{- if .Values.secret.analytics.secretRef }}
