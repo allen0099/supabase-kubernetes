@@ -1,11 +1,12 @@
 {{- if .Values.db.enabled -}}
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: {{ include "supabase.db.fullname" . }}
   labels:
     {{- include "supabase.labels" . | nindent 4 }}
 spec:
+  serviceName: {{ include "supabase.db.fullname" . }}
   {{- if not .Values.db.autoscaling.enabled }}
   replicas: {{ .Values.db.replicaCount }}
   {{- end }}
@@ -124,8 +125,8 @@ spec:
             {{- toYaml . | nindent 12 }}
           {{- end }}
           ports:
-            - name: http
-              containerPort: 9999
+            - name: postgres
+              containerPort: 5432
               protocol: TCP
           volumeMounts:
             - mountPath: /docker-entrypoint-initdb.d
@@ -155,21 +156,17 @@ spec:
         {{- with .Values.db.volumes }}
           {{- toYaml . | nindent 8 }}
         {{- end }}
-        {{- if .Values.db.persistence.enabled }}
-        - name: postgres-volume
-          persistentVolumeClaim:
-            claimName: {{ include "supabase.db.fullname" . }}-pvc
-        {{- end }}
-      {{- with .Values.db.nodeSelector }}
-      nodeSelector:
-        {{- toYaml . | nindent 8 }}
+  {{- if .Values.db.persistence.enabled }}
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-volume
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: {{ .Values.db.persistence.size | quote }}
+      {{- if .Values.db.persistence.storageClass }}
+      storageClassName: {{ .Values.db.persistence.storageClass | quote }}
       {{- end }}
-      {{- with .Values.db.affinity }}
-      affinity:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
-      {{- with .Values.db.tolerations }}
-      tolerations:
-        {{- toYaml . | nindent 8 }}
-      {{- end }}
+  {{- end }}
 {{- end }}

@@ -31,7 +31,7 @@ db:
         - postgres
     initialDelaySeconds: 3
   persistence:
-    enabled: false
+    enabled: true
 
 studio:
   image:
@@ -114,7 +114,7 @@ storage:
       port: 5000
     initialDelaySeconds: 3
   persistence:
-    enabled: false
+    enabled: true
 
 imgproxy:
   image:
@@ -131,7 +131,7 @@ imgproxy:
         - health
     initialDelaySeconds: 3
   persistence:
-    enabled: false
+    enabled: true
 
 kong:
   image:
