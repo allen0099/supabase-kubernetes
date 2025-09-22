@@ -1,3 +1,7 @@
+common:
+  baseDomain: example.com
+  protocol: https
+
 secret:
   jwt:
     anonKey: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyAgCiAgICAicm9sZSI6ICJhbm9uIiwKICAgICJpc3MiOiAic3VwYWJhc2UtZGVtbyIsCiAgICAiaWF0IjogMTY0MTc2OTIwMCwKICAgICJleHAiOiAxNzk5NTM1NjAwCn0.dc_X5iR_VP_qT0zsiyj_I_OZ2T9FtRU2BBNWN8Bu4GE
@@ -39,7 +43,6 @@ studio:
   environment:
     STUDIO_DEFAULT_ORGANIZATION: "My Organization"
     STUDIO_DEFAULT_PROJECT: "My Project"
-    SUPABASE_PUBLIC_URL: http://example.com/
     NEXT_PUBLIC_ENABLE_LOGS: "true"
   livenessProbe:
     httpGet:
@@ -51,8 +54,6 @@ auth:
   image:
     tag: v2.177.0
   environment:
-    API_EXTERNAL_URL: http://example.com
-    GOTRUE_SITE_URL: http://example.com
     GOTRUE_URI_ALLOW_LIST: ""
     GOTRUE_DISABLE_SIGNUP: false
     GOTRUE_JWT_ADMIN_ROLES: service_role
@@ -151,14 +152,6 @@ kong:
     annotations:
       nginx.ingress.kubernetes.io/rewrite-target: /
     tls: []
-      # - secretName: example-ingress-tls
-      #   hosts:
-      #     - example.com
-    hosts:
-      - host: example.com
-        paths:
-          - path: /
-            pathType: Prefix
 
 analytics:
   image:
@@ -201,7 +194,6 @@ supavisor:
     create: true
     name: ""
   image:
-    repository: supabase/supavisor
     tag: 2.5.7
   replicaCount: 1
   autoscaling:

@@ -37,7 +37,11 @@ spec:
           env:
             {{- range $key, $value := .Values.studio.environment }}
             - name: {{ $key }}
+              {{- if eq $key "SUPABASE_PUBLIC_URL" }}
+              value: {{ printf "%s://%s" $.Values.common.protocol $.Values.common.baseDomain | quote }}
+              {{- else }}
               value: {{ $value | quote }}
+              {{- end }}
             {{- end }}
             {{- if .Values.kong.enabled }}
             - name: SUPABASE_URL

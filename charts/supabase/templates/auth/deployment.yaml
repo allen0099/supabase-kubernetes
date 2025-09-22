@@ -75,6 +75,10 @@ spec:
             - name: {{ $key }}
               value: {{ $value | quote }}
             {{- end }}
+            - name: API_EXTERNAL_URL
+              value: {{ printf "%s://%s" .Values.common.protocol .Values.common.baseDomain | quote }}
+            - name: GOTRUE_SITE_URL
+              value: {{ printf "%s://%s" .Values.common.protocol .Values.common.baseDomain | quote }}
             {{- if .Values.db.enabled }}
             - name: DB_HOST
               value: {{ include "supabase.db.fullname" . }}
