@@ -22,6 +22,8 @@ secret:
   supavisor:
     secretKeyBase: UpNVntn3cDxHJpq99YMc1T1AQgQpc8kfYTuRgBiYa15BLrx8etQoXz3gZv1/u2oq
     vaultEncKey: your-encryption-key-32-chars-min
+  openai:
+    key: your-openai-api-key
 
 db:
   enabled: true
@@ -199,10 +201,6 @@ supavisor:
   autoscaling:
     enabled: false
   environment:
-    API_JWT_SECRET: ""
-    METRICS_JWT_SECRET: ""
-    VAULT_ENC_KEY: ""
-    SECRET_KEY_BASE: ""
     REGION: local
     ERL_AFLAGS: -proto_dist inet_tcp
     POOLER_TENANT_ID: your-tenant-id

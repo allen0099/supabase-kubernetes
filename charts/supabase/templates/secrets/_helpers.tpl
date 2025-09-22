@@ -62,3 +62,7 @@ Expand the name of the supavisor secret.
 {{- define "supabase.secret.supavisor" -}}
 {{- printf "%s-supavisor" (include "supabase.fullname" .) }}
 {{- end -}}
+
+{{- define "supabase.secret.openai" -}}
+{{- printf "%s-openai" (include "supabase.fullname" .) }}
+{{- end -}}
