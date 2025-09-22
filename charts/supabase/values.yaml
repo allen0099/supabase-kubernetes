@@ -94,6 +94,8 @@ secret:
     secretRefKey:
       secretKeyBase: secretKeyBase
       vaultEncKey: vaultEncKey
+  openai:
+    key: ""
 
 # Optional: Postgres Database
 # A standalone Postgres database configured to work with Supabase services.
