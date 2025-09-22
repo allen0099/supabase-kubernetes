@@ -19,11 +19,13 @@ secret:
     database: postgres
   analytics:
     apiKey: your-super-secret-and-long-logflare-key
+    public: your-super-secret-and-long-logflare-key-public
+    private: your-super-secret-and-long-logflare-key-private
   supavisor:
     secretKeyBase: UpNVntn3cDxHJpq99YMc1T1AQgQpc8kfYTuRgBiYa15BLrx8etQoXz3gZv1/u2oq
     vaultEncKey: your-encryption-key-32-chars-min
   openai:
-    key: your-openai-api-key
+    key: 
 
 db:
   enabled: true
@@ -41,7 +43,7 @@ db:
 
 studio:
   image:
-    tag: 2025.06.30-sha-6f5982d
+    tag: 2025.09.22-sha-584a362
   environment:
     STUDIO_DEFAULT_ORGANIZATION: "My Organization"
     STUDIO_DEFAULT_PROJECT: "My Project"

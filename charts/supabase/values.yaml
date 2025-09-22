@@ -49,11 +49,15 @@ secret:
   # analytics Logflare API key
   analytics:
     apiKey: ""
+    public: ""
+    private: ""
     # specify existing secret, which takes precedence over variable above
     secretRef: ""
     # override secret keys for existing secret refs
     secretRefKey:
       apiKey: apiKey
+      public: public
+      private: private
   # smtp will be used to reference secret including smtp credentials
   smtp:
     # username: ""
@@ -1017,6 +1021,7 @@ vector:
   ## Vector requires logs from the control plane to function.
   ## This is normally stored in /var/log/pods
   ## Modify these values according to your environment.
+  environment: {}
   volumeMounts:
     - name: pod-logs
       mountPath: /var/log/pods
